@@ -113,20 +113,147 @@
 %----------------------------------------------------------------------------------------
 
 %------------------------------------------------
-\section{First Section} % Sections can be created in order to organize your presentation into discrete blocks, all sections and subsections are automatically printed in the table of contents as an overview of the talk
+\section{Le système Géocube:} % Sections can be created in order to organize your presentation into discrete blocks, all sections and subsections are automatically printed in the table of contents as an overview of the talk
 %------------------------------------------------
-
-\subsection{Subsection Example} % A subsection can be created just before a set of slides with a common theme to further break down your presentation into chunks
-
 \begin{frame}
-\frametitle{Paragraphs of Text}
-Sed iaculis dapibus gravida. Morbi sed tortor erat, nec interdum arcu. Sed id lorem lectus. Quisque viverra augue id sem ornare non aliquam nibh tristique. Aenean in ligula nisl. Nulla sed tellus ipsum. Donec vestibulum ligula non lorem vulputate fermentum accumsan neque mollis.\\~\\
-
-Sed diam enim, sagittis nec condimentum sit amet, ullamcorper sit amet libero. Aliquam vel dui orci, a porta odio. Nullam id suscipit ipsum. Aenean lobortis commodo sem, ut commodo leo gravida vitae. Pellentesque vehicula ante iaculis arcu pretium rutrum eget sit amet purus. Integer ornare nulla quis neque ultrices lobortis. Vestibulum ultrices tincidunt libero, quis commodo erat ullamcorper id.
+\frametitle{Le système Géocube}
+\begin{itemize}
+\item Conçu par LOEMI-IGN et industrialisé par Kylia;
+\item Réseau de capteurs pour mesurer les déformations avec une précision millimétrique;
+\item Ultra basse consommation électrique;
+\item Adapté à la surveillance environnementale en temps de crise;
+\item Doté d'un noyau temps-réel dur développé à LOEMI-IGN.
+\end{itemize}
 \end{frame}
 
 %------------------------------------------------
 
+\begin{frame}
+\frametitle{Le système Géocube:}
+\begin{figure}
+\centering
+\includegraphics[scale=0.53]{images/grid.png}
+\label{fig:grid}
+\caption{Réseau de Géocubes}
+\end{figure}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{Le système Géocube}
+On peut communiquer avec un Géocube:
+\begin{itemize}
+\item en envoyant des commandes par radio depuis le coordinateur.
+\item lien filaire: port série (Par souci d'étanchéité du boîtier, cette solution n'est pas maintenu dans la version industrielle).
+\end{itemize}
+
+Ajouter un autre moyen de communication:
+\begin{itemize}
+\item La communication en champ proche (NFC)
+\end{itemize}
+\begin{figure}
+\centering
+\includegraphics[scale=0.7]{images/g3nfc.png}
+\end{figure}
+\end{frame}
+
+%------------------------------------------------
+
+\section{Intégration d'une solution NFC au Géocube}
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{La communication en champ proche (NFC)}
+\begin{itemize}
+\item Technologie utilisée principalement pour identifier les objets et échanger des information peu volumineuse;
+\item Opérant en 13.56Mhz, la distance entre les dispositifs ne doit pas dépasser 3cm;
+\item Des dizaines de normes pour standardiser les protocoles de communication;
+\end{itemize}
+Deux modes de communication:
+\begin{itemize}
+\item Card emulation;
+\item Peer2Peer.
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------
+\subsection{Choix de la puce NFC}
+\begin{frame}
+\frametitle{Choix de la puce NFC}
+La plupart des puces existant sur le marché sont en mode "Card emulation". Quelques constructeurs proposent des puces P2P:
+
+\begin{table}
+\centering
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+Référence & Constructeur & Prix(\$) & Débit(kbps) & ISO 14443 & Interface & T(deg) & RAM\\ \hline
+TRF7970A & TI & 6.98 & 424 & 3 & SPI-Paral & -40 - 110 & NC\\
+RF430CL330H & TI & 1.74 & 848 & 3 & SPI-I2C & -40 - 85 & 3KO\\
+AS3953 & AMS & 1.09 & 848 & 3 & SPI & -40 - 85 & NC\\
+PN533 & NXP & NC & 848 & 3 & USB2 & -40 - 125 & 1KO\\
+\hline
+\end{tabular}
+}
+\end{table}
+
+Maintient de l'AS3953:
+\begin{itemize}
+\item Modification de la carte Géocube actuelle
+\item Basse consommation électrique
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------
+\subsection{Développement de l'antenne}
+% Schéma electrique d'une antenne
+
+\begin{frame}
+
+Le circuit puce NFC+Antenne peut être assimiler au circuit suivant.
+\begin{figure}
+\centering
+\includegraphics[scale=0.4]{images/withPARA.png}
+\end{figure}
+
+En calculant les R, C équivalents:
+\begin{figure}
+\centering
+\includegraphics[scale=0.4]{images/circuiteq.png}
+\end{figure}
+\end{frame}
+
+%------------------------------------------------
+% Les trucs que j'ai essayé et l'antenne que j'ai fabriqué
+
+\begin{frame}
+
+Échantillons du commerce essayés:
+\begin{figure}
+\center
+\end{figure}
+
+\end{frame}
+%------------------------------------------------
+% équations électriques
+
+%------------------------------------------------
+% Mode opératoire
+\begin{frame}
+\frametitle{Mode opératoire}
+\begin{figure}
+\centering
+\includegraphics[scale=0.7]{images/oscillo.png}
+\end{figure}
+\end{frame}
+%------------------------------------------------
+\subsection{Conception et développement des couches logicielles}
+
+
+%------------------------------------------------
+\subsection{Conception et développement de l'application Android}
+%------------------------------------------------
 \begin{frame}
 \frametitle{Bullet Points}
 \begin{itemize}
