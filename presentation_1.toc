@@ -5,5 +5,10 @@
 \beamer@subsectionintoc {2}{1}{Choix de la puce NFC}{7}{0}{2}
 \beamer@subsectionintoc {2}{2}{D\IeC {\'e}veloppement de l'antenne}{8}{0}{2}
 \beamer@subsectionintoc {2}{3}{Conception et d\IeC {\'e}veloppement des couches logicielles}{11}{0}{2}
-\beamer@subsectionintoc {2}{4}{Conception et d\IeC {\'e}veloppement de l'application Android}{11}{0}{2}
-\beamer@sectionintoc {3}{Second Section}{14}{0}{3}
+\beamer@subsectionintoc {2}{4}{Conception et d\IeC {\'e}veloppement de l'application Android}{20}{0}{2}
+\beamer@sectionintoc {3}{Conception, D\IeC {\'e}veloppement et d\IeC {\'e}ploiement d'un syst\IeC {\`e}me de mise \IeC {\`a} jour pour le coordinateur des G\IeC {\'e}ocubes}{21}{0}{3}
+\beamer@subsectionintoc {3}{1}{Analyse du besoin}{21}{0}{3}
+\beamer@subsectionintoc {3}{2}{Conception statique}{22}{0}{3}
+\beamer@subsectionintoc {3}{3}{Conception dynamique et d\IeC {\'e}veloppement}{24}{0}{3}
+\beamer@sectionintoc {4}{Mise en place d'une infrastructure virtuelle de production des logiciels}{26}{0}{4}
+\beamer@sectionintoc {5}{Limites du travail}{28}{0}{5}

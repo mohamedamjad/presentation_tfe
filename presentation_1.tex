@@ -231,9 +231,14 @@ En calculant les R, C équivalents:
 
 Échantillons du commerce essayés:
 \begin{figure}
-\center
+\centering
+\includegraphics[scale=0.5]{images/antennas.png}
 \end{figure}
-
+\begin{itemize}
+\item conception de quelques antennes artisanales;
+\item impression des circuits électroniques correspondants;
+\item expérimentation, ...
+\end{itemize}
 \end{frame}
 %------------------------------------------------
 % équations électriques
@@ -244,144 +249,255 @@ En calculant les R, C équivalents:
 \frametitle{Mode opératoire}
 \begin{figure}
 \centering
-\includegraphics[scale=0.7]{images/oscillo.png}
+\includegraphics[scale=0.4]{images/gbfoscillo.png}
 \end{figure}
 \end{frame}
 %------------------------------------------------
 \subsection{Conception et développement des couches logicielles}
+%------------------------------------------------
+% communication global
+\begin{frame}
+\frametitle{Schéma des composants}
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{images/block-diagram.png}
+\end{figure}
+\begin{itemize}
+\item EEPROM: Electrically Erasable Programmable Read-Only Memory, 32 mots d'un 1octet chacun
+\item PICC: Proximity Inductive Coupling Card, composant qui encapsule toute la logique liée aux 3 premiers niveaux de l'ISO/IEC14443 
+\end{itemize}
 
+\end{frame}
+%------------------------------------------------
+% communication global
+\begin{frame}
+\frametitle{Communication micro-contrôleur/Puce NFC}
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{images/block-diagram.png}
+\end{figure}
+Exemple: Écrire un mot dans la FIFO
+\begin{itemize}
+\item Le micro-contrôleur active le CS, la synchronisation de l'horloge du micro-contrôleur avec celle de la puce NFC est effectuée.
+\item Le micro-contrôleur envoie 3 octets à travers le MOSI: Le premier correspond au mode de communication (1000 0000 pour écrire dans la FIFO), Le deuxième c'est l'adresse du mot qu'on veut écrire(0000 0000 pour écrire dans le premier mot) et l'octet qu'on veut écrire (1111 1111 par exemple). 1000 0000 0000 0000 1111 1111.
+\item De même pour la lecture...
+
+\end{itemize}
+
+\end{frame}
+%------------------------------------------------
+% dire que n inclut pas le 4eme niveau est
+
+\begin{frame}
+
+Pour pouvoir communiquer avec un smartphone Android en mode P2P il faut implémenter le 4ème niveau de la norme ISO/IEC 14443.
+
+Ce niveau n'est pas disponible par défaut dans la puce NFC choisie.
+
+Le BTP (Block Transmission Protocol), définit un format de block d'échange comme suit:
+\begin{tabular}[hf]{|c|c|c|c|c|c|c|c|}
+\hline
+\multicolumn{3}{|c|}{Prologue} & \multicolumn{3}{c|}{Information} & \multicolumn{2}{c|}{Epilogue} \\
+\hline
+PCB & [CID] & [NAD] & \multicolumn{3}{|c|}{[INF]} & \multicolumn{2}{c|}{EDC}\\
+\hline
+1 octet & 1 octet & 1 octet & \multicolumn{3}{|c|}{} & \multicolumn{2}{c|}{2 octets}\\
+\hline
+\end{tabular}
+\end{frame}
+%------------------------------------------------
+% dire que n inclut pas le 4eme niveau est
+\begin{frame}
+\frametitle{PCB}
+Le PCB(Protocol Control Byte), peut être un de ces trois octets:
+\begin{itemize}
+\item I-Block utilisé pour indiquer au dispositif destinataire que le bloc envoyé est
+un bloc d’information et contient des octets dans le champs INF.
+\item R-Block: utilisé pour indiquer une reconnaissance négative ou positive. Un R-
+Block ne contient jamais de champs INF.
+\item S-Block: utilisé pour échanger des informations de control entre le PCD et le
+PICC. Il existe deux types de S-Block : le DESELECT qui n’est jamais suivit par un
+champ INF et le WTE qui doit être suivit par un octets dans le champ INF.
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------
+% dire que n inclut pas le 4eme niveau est
+\begin{frame}
+\frametitle{Réception d'un bloc}
+L'échange des blocs en NFC est toujours initié par le smartphone.
+
+Pour recevoir un bloc du smartphone:
+\begin{itemize}
+\item Le micro-contrôleur reçoit un signal d'interruption de la puce NFC;
+\item acquitte l'interruption;
+\item lance la tâche NFC;
+\item la tâche NFC commence par lire le registre d'erreurs, pour voir est ce que le bloc envoyé a passé les 3 premiers niveaux de l'ISO/IEC 14443 sans problèmes;
+\item la tâche NFC lit le registre principal des interruptions pour vérifier qu'elle a été lancée suite à une activation par un autre dispositif qui supporte l'ISO/IEC 14443;
+\item la tâche NFC lit la file FIFO de la puce NFC, Le premier mot est soit un R-Block, I-Block ou S-Block.
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------
+% dire que n inclut pas le 4eme niveau est
+\begin{frame}
+\frametitle{Envoi d'un bloc}
+Pour envoyer un bloc du Géocube au smartphone:
+\begin{itemize}
+\item La tâche NFC écrit dans la FIFO le bloc qu'elle veut envoyée;
+\item Elle envoie ensuite une commande direct au PICC pour lui demander de transférer les octets de la FIFO au smartphone.
+\item La réponse à un bloc envoyé par le smartphone doit être effectuée dans un délais bien déterminé.
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.45]{images/fwt.png}
+\end{figure}
+
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------
+% picc check
+\begin{frame}
+\frametitle{HandShake NFC}
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{images/presencecheck.png}
+\end{figure}
+
+Lors du HandShake la tâche NFC envoie dans le premier I-Block échangé, l'URI de l'application Android qu'elle veut lancer
+\end{frame}
+
+%------------------------------------------------
+% picc check
+\begin{frame}
+\frametitle{Transfert des blocs}
+\begin{figure}
+\centering
+\includegraphics[scale=0.25]{images/chaining.png}
+\end{figure}
+Les mots envoyés par la tâche NFC: 1111 1XXX | 0101 0101 0101 0101 |
+\end{frame}
+
+%------------------------------------------------
+% picc check
+\begin{frame}
+\frametitle{Deselect}
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{images/deselect.png}
+\end{figure}
+Fin de la transmission...
+\end{frame}
 
 %------------------------------------------------
 \subsection{Conception et développement de l'application Android}
 %------------------------------------------------
 \begin{frame}
-\frametitle{Bullet Points}
+\frametitle{Foreground dispatch system}
 \begin{itemize}
-\item Lorem ipsum dolor sit amet, consectetur adipiscing elit
-\item Aliquam blandit faucibus nisi, sit amet dapibus enim tempus eu
-\item Nulla commodo, erat quis gravida posuere, elit lacus lobortis est, quis porttitor odio mauris at libero
-\item Nam cursus est eget velit posuere pellentesque
-\item Vestibulum faucibus velit a augue condimentum quis convallis nulla gravida
+\item L'application G3NFC doit se lancer automatiquement lorsqu'un Géocube est scanné.
+\item Utiliser le foreground dispatch system d'android
+\end{itemize}
+\begin{figure}
+\centering
+\includegraphics[scale=0.6]{images/foreground.png}
+
+\end{figure}
+\end{frame}
+
+\section{Conception, Développement et déploiement d'un système de mise à jour pour le coordinateur des Géocubes}
+\subsection{Analyse du besoin}
+%------------------------------------------------
+\begin{frame}
+\frametitle{Contexte générale}
+\begin{figure}
+\centering
+\includegraphics[scale=0.7]{images/context_general.png}
+\end{figure}
+\end{frame}
+%------------------------------------------------
+\subsection{Conception statique}
+\begin{frame}
+\frametitle{Cas d'utilisation}
+\begin{figure}
+\centering
+\includegraphics[scale=0.45]{images/use_case_sharokey.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Modèle Physique des Données}
+\begin{figure}
+\centering
+\includegraphics[scale=0.6]{images/MPD_sharokey.png}
+\end{figure}
+\end{frame}
+\subsection{Conception dynamique et développement}
+\begin{frame}
+\frametitle{Composants de Sharokey}
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{images/composants.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Composants de Sharokey}
+\begin{itemize}
+\item Model : module NodeJS qui encapsule toute la logique liée aux opérations que les autres
+composants peuvent effectuer sur la base de donnée. Ainsi, si un module veut effectuer
+une opération sur la base de données, il devra passer par ce module.
+\item Kernel : C’est le noyau NodeJS de Sharokey (l’API centrale) qui contient toutes les
+fonctions communes aux autres modules.
+\item Watcher : C’est le composant le plus dynamique du système il écoute les triggers de la base
+de données effectue les modifications nécessaires sur le systèmes de fichier et vice-versa.
+Il encapsule aussi la logique liée à la sécurité et la génération automatique et signature
+des clés publiques et privés des nouveaux clients.
+\item server : C’est le serveur NodeJS qui reçoit les requêtes des clients en HTTPS, vérifie la
+signature sur leurs clés publiques, vérifie leur droit d’effectuer des mises à jour, prépare
+et envoie la mise à jour sous format de scripts auto-extractible.
+
 \end{itemize}
 \end{frame}
 
-%------------------------------------------------
-
 \begin{frame}
-\frametitle{Blocks of Highlighted Text}
-\begin{block}{Block 1}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer lectus nisl, ultricies in feugiat rutrum, porttitor sit amet augue. Aliquam ut tortor mauris. Sed volutpat ante purus, quis accumsan dolor.
-\end{block}
-
-\begin{block}{Block 2}
-Pellentesque sed tellus purus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Vestibulum quis magna at risus dictum tempor eu vitae velit.
-\end{block}
-
-\begin{block}{Block 3}
-Suspendisse tincidunt sagittis gravida. Curabitur condimentum, enim sed venenatis rutrum, ipsum neque consectetur orci, sed blandit justo nisi ac lacus.
-\end{block}
+\frametitle{Ajout d'un nouveau client}
+\begin{figure}
+\centering
+\includegraphics[scale=0.4]{images/1.png}
+\end{figure}
 \end{frame}
 
-%------------------------------------------------
-
+\section{Mise en place d'une infrastructure virtuelle de production des logiciels}
 \begin{frame}
-\frametitle{Multiple Columns}
-\begin{columns}[c] % The "c" option specifies centered vertical alignment while the "t" option is used for top vertical alignment
-
-\column{.45\textwidth} % Left column and width
-\textbf{Heading}
-\begin{enumerate}
-\item Statement
-\item Explanation
-\item Example
-\end{enumerate}
-
-\column{.5\textwidth} % Right column and width
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer lectus nisl, ultricies in feugiat rutrum, porttitor sit amet augue. Aliquam ut tortor mauris. Sed volutpat ante purus, quis accumsan dolor.
-
-\end{columns}
+\frametitle{Production des logiciels}
+\begin{figure}
+\centering
+\includegraphics[scale=0.6]{images/fig3.png}
+\end{figure}
 \end{frame}
 
-%------------------------------------------------
-\section{Second Section}
+\begin{frame}
+\frametitle{Production des logiciels}
+\begin{figure}
+\centering
+\includegraphics[scale=0.3]{images/vps1.png}
+\end{figure}
+\end{frame}
+
+\section{Limites du travail}
 %------------------------------------------------
 
-\begin{frame}
-\frametitle{Table}
-\begin{table}
-\begin{tabular}{l l l}
-\toprule
-\textbf{Treatments} & \textbf{Response 1} & \textbf{Response 2}\\
-\midrule
-Treatment 1 & 0.0003262 & 0.562 \\
-Treatment 2 & 0.0015681 & 0.910 \\
-Treatment 3 & 0.0009271 & 0.296 \\
-\bottomrule
-\end{tabular}
-\caption{Table caption}
-\end{table}
-\end{frame}
+
+
+
 
 %------------------------------------------------
 
 \begin{frame}
-\frametitle{Theorem}
-\begin{theorem}[Mass--energy equivalence]
-$E = mc^2$
-\end{theorem}
-\end{frame}
-
-%------------------------------------------------
-
-\begin{frame}[fragile] % Need to use the fragile option when verbatim is used in the slide
-\frametitle{Verbatim}
-\begin{example}[Theorem Slide Code]
-\begin{verbatim}
-\begin{frame}
-\frametitle{Theorem}
-\begin{theorem}[Mass--energy equivalence]
-$E = mc^2$
-\end{theorem}
-\end{frame}\end{verbatim}
-\end{example}
-\end{frame}
-
-%------------------------------------------------
-
-\begin{frame}
-\frametitle{Figure}
-Uncomment the code on this slide to include your own image from the same directory as the template .TeX file.
-%\begin{figure}
-%\includegraphics[width=0.8\linewidth]{test}
-%\end{figure}
-\end{frame}
-
-%------------------------------------------------
-
-\begin{frame}[fragile] % Need to use the fragile option when verbatim is used in the slide
-\frametitle{Citation}
-An example of the \verb|\cite| command to cite within the presentation:\\~
-
-This statement requires citation \cite{p1}.
-\end{frame}
-
-%------------------------------------------------
-
-\begin{frame}
-\frametitle{References}
-\footnotesize{
-\begin{thebibliography}{99} % Beamer does not support BibTeX so references must be inserted manually as below
-\bibitem[Smith, 2012]{p1} John Smith (2012)
-\newblock Title of the publication
-\newblock \emph{Journal Name} 12(3), 45 -- 678.
-\end{thebibliography}
-}
-\end{frame}
-
-%------------------------------------------------
-
-\begin{frame}
-\Huge{\centerline{The End}}
+\Huge{\centerline{Merci!}}
 \end{frame}
 
 %----------------------------------------------------------------------------------------
