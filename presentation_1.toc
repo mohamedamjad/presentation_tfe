@@ -1,14 +1,14 @@
 \beamer@endinputifotherversion {3.33pt}
 \select@language {french}
-\beamer@sectionintoc {1}{Le syst\IeC {\`e}me G\IeC {\'e}ocube:}{3}{0}{1}
+\beamer@sectionintoc {1}{Le syst\IeC {\`e}me G\IeC {\'e}ocube}{3}{0}{1}
 \beamer@sectionintoc {2}{Int\IeC {\'e}gration d'une solution NFC au G\IeC {\'e}ocube}{6}{0}{2}
-\beamer@subsectionintoc {2}{1}{Choix de la puce NFC}{7}{0}{2}
-\beamer@subsectionintoc {2}{2}{D\IeC {\'e}veloppement de l'antenne}{8}{0}{2}
-\beamer@subsectionintoc {2}{3}{Conception et d\IeC {\'e}veloppement des couches logicielles}{11}{0}{2}
-\beamer@subsectionintoc {2}{4}{Conception et d\IeC {\'e}veloppement de l'application Android}{20}{0}{2}
-\beamer@sectionintoc {3}{Conception, D\IeC {\'e}veloppement et d\IeC {\'e}ploiement d'un syst\IeC {\`e}me de mise \IeC {\`a} jour pour le coordinateur des G\IeC {\'e}ocubes}{21}{0}{3}
-\beamer@subsectionintoc {3}{1}{Analyse du besoin}{21}{0}{3}
-\beamer@subsectionintoc {3}{2}{Conception statique}{22}{0}{3}
-\beamer@subsectionintoc {3}{3}{Conception dynamique et d\IeC {\'e}veloppement}{24}{0}{3}
-\beamer@sectionintoc {4}{Mise en place d'une infrastructure virtuelle de production des logiciels}{26}{0}{4}
-\beamer@sectionintoc {5}{Limites du travail}{28}{0}{5}
+\beamer@subsubsectionintoc {2}{0}{1}{Choix de la puce NFC}{7}{0}{2}
+\beamer@subsubsectionintoc {2}{0}{2}{D\IeC {\'e}veloppement de l'antenne}{8}{0}{2}
+\beamer@subsubsectionintoc {2}{0}{3}{Conception et d\IeC {\'e}veloppement des couches logicielles}{10}{0}{2}
+\beamer@subsectionintoc {2}{1}{Conception et d\IeC {\'e}veloppement de l'application Android}{13}{0}{2}
+\beamer@sectionintoc {3}{Mise en place d'une infrastructure virtuelle de production des logiciels}{14}{0}{3}
+\beamer@sectionintoc {4}{Conception, D\IeC {\'e}veloppement et d\IeC {\'e}ploiement d'un syst\IeC {\`e}me de mise \IeC {\`a} jour pour le coordinateur des G\IeC {\'e}ocubes}{16}{0}{4}
+\beamer@subsubsectionintoc {4}{0}{1}{Analyse du besoin}{16}{0}{4}
+\beamer@subsubsectionintoc {4}{0}{2}{Conception statique}{17}{0}{4}
+\beamer@subsubsectionintoc {4}{0}{3}{Conception dynamique et d\IeC {\'e}veloppement}{19}{0}{4}
+\beamer@sectionintoc {5}{Limites du travail et conclusion}{21}{0}{5}

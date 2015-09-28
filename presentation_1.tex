@@ -87,10 +87,12 @@
 %----------------------------------------------------------------------------------------
 
 \title[Stage de Fin d'Études]{Intégration d'un dispositif de communication en champ proche (NFC) au Géocube} % The short title appears at the bottom of every slide, the full title is only on the title page
+\subtitle{et autres développements}
 
 \author{Mohamed-Amjad LASRI} % Your name
 \institute[IT3 - GTSI] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
 {
+KYLIA et LOEMI-IGN\\
 École Nationale des Sciences Géographiques \\ % Your institution for the title page
 \medskip
 \textit{mohamed-amjad.lasri@ensg.eu} % Your email address
@@ -105,7 +107,11 @@
 
 \begin{frame}
 \frametitle{Sommaire} % Table of contents slide, comment this block out to remove it
-\tableofcontents % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
+\tableofcontents[
+currentsection,
+  sectionstyle=show,
+  subsectionstyle=hide
+] % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
 \end{frame}
 
 %----------------------------------------------------------------------------------------
@@ -113,16 +119,16 @@
 %----------------------------------------------------------------------------------------
 
 %------------------------------------------------
-\section{Le système Géocube:} % Sections can be created in order to organize your presentation into discrete blocks, all sections and subsections are automatically printed in the table of contents as an overview of the talk
+\section{Le système Géocube} % Sections can be created in order to organize your presentation into discrete blocks, all sections and subsections are automatically printed in the table of contents as an overview of the talk
 %------------------------------------------------
 \begin{frame}
 \frametitle{Le système Géocube}
 \begin{itemize}
-\item Conçu par LOEMI-IGN et industrialisé par Kylia;
+\item Conçu par le LOEMI-IGN et industrialisé par Kylia;
 \item Réseau de capteurs pour mesurer les déformations avec une précision millimétrique;
 \item Ultra basse consommation électrique;
 \item Adapté à la surveillance environnementale en temps de crise;
-\item Doté d'un noyau temps-réel dur développé à LOEMI-IGN.
+\item Doté d'un noyau temps-réel dur développé au LOEMI-IGN.
 \end{itemize}
 \end{frame}
 
@@ -144,7 +150,7 @@
 On peut communiquer avec un Géocube:
 \begin{itemize}
 \item en envoyant des commandes par radio depuis le coordinateur.
-\item lien filaire: port série (Par souci d'étanchéité du boîtier, cette solution n'est pas maintenu dans la version industrielle).
+\item lien filaire: port série (par souci d'étanchéité du boîtier, cette solution n'est pas maintenue dans la version industrielle).
 \end{itemize}
 
 Ajouter un autre moyen de communication:
@@ -165,9 +171,9 @@ Ajouter un autre moyen de communication:
 \begin{frame}
 \frametitle{La communication en champ proche (NFC)}
 \begin{itemize}
-\item Technologie utilisée principalement pour identifier les objets et échanger des information peu volumineuse;
+\item Technologie utilisée principalement pour identifier les objets et échanger des informations peu volumineuses;
 \item Opérant en 13.56Mhz, la distance entre les dispositifs ne doit pas dépasser 3cm;
-\item Des dizaines de normes pour standardiser les protocoles de communication;
+\item Des dizaines de normes pour standardiser les protocoles de communication-> convergence vers ISO14443A;
 \end{itemize}
 Deux modes de communication:
 \begin{itemize}
@@ -177,7 +183,7 @@ Deux modes de communication:
 \end{frame}
 
 %------------------------------------------------
-\subsection{Choix de la puce NFC}
+\subsubsection{Choix de la puce NFC}
 \begin{frame}
 \frametitle{Choix de la puce NFC}
 La plupart des puces existant sur le marché sont en mode "Card emulation". Quelques constructeurs proposent des puces P2P:
@@ -206,23 +212,8 @@ Maintient de l'AS3953:
 \end{frame}
 
 %------------------------------------------------
-\subsection{Développement de l'antenne}
-% Schéma electrique d'une antenne
+\subsubsection{Développement de l'antenne}
 
-\begin{frame}
-
-Le circuit puce NFC+Antenne peut être assimiler au circuit suivant.
-\begin{figure}
-\centering
-\includegraphics[scale=0.4]{images/withPARA.png}
-\end{figure}
-
-En calculant les R, C équivalents:
-\begin{figure}
-\centering
-\includegraphics[scale=0.4]{images/circuiteq.png}
-\end{figure}
-\end{frame}
 
 %------------------------------------------------
 % Les trucs que j'ai essayé et l'antenne que j'ai fabriqué
@@ -253,7 +244,7 @@ En calculant les R, C équivalents:
 \end{figure}
 \end{frame}
 %------------------------------------------------
-\subsection{Conception et développement des couches logicielles}
+\subsubsection{Conception et développement des couches logicielles}
 %------------------------------------------------
 % communication global
 \begin{frame}
@@ -263,28 +254,12 @@ En calculant les R, C équivalents:
 \includegraphics[scale=0.5]{images/block-diagram.png}
 \end{figure}
 \begin{itemize}
-\item EEPROM: Electrically Erasable Programmable Read-Only Memory, 32 mots d'un 1octet chacun
+\item EEPROM: Electrically Erasable Programmable Read-Only Memory, 32 mots d'un octet chacun
 \item PICC: Proximity Inductive Coupling Card, composant qui encapsule toute la logique liée aux 3 premiers niveaux de l'ISO/IEC14443 
 \end{itemize}
 
 \end{frame}
-%------------------------------------------------
-% communication global
-\begin{frame}
-\frametitle{Communication micro-contrôleur/Puce NFC}
-\begin{figure}
-\centering
-\includegraphics[scale=0.5]{images/block-diagram.png}
-\end{figure}
-Exemple: Écrire un mot dans la FIFO
-\begin{itemize}
-\item Le micro-contrôleur active le CS, la synchronisation de l'horloge du micro-contrôleur avec celle de la puce NFC est effectuée.
-\item Le micro-contrôleur envoie 3 octets à travers le MOSI: Le premier correspond au mode de communication (1000 0000 pour écrire dans la FIFO), Le deuxième c'est l'adresse du mot qu'on veut écrire(0000 0000 pour écrire dans le premier mot) et l'octet qu'on veut écrire (1111 1111 par exemple). 1000 0000 0000 0000 1111 1111.
-\item De même pour la lecture...
 
-\end{itemize}
-
-\end{frame}
 %------------------------------------------------
 % dire que n inclut pas le 4eme niveau est
 
@@ -304,6 +279,151 @@ PCB & [CID] & [NAD] & \multicolumn{3}{|c|}{[INF]} & \multicolumn{2}{c|}{EDC}\\
 1 octet & 1 octet & 1 octet & \multicolumn{3}{|c|}{} & \multicolumn{2}{c|}{2 octets}\\
 \hline
 \end{tabular}
+\end{frame}
+
+%------------------------------------------------
+% picc check
+\begin{frame}
+\frametitle{Transfert des blocs}
+\begin{figure}
+\centering
+\includegraphics[scale=0.25]{images/chaining.png}
+\end{figure}
+Les mots envoyés par la tâche NFC: 1111 1XXX | 0101 0101 0101 0101 |
+\end{frame}
+
+%------------------------------------------------
+\subsection{Conception et développement de l'application Android}
+%------------------------------------------------
+\begin{frame}
+\frametitle{Foreground dispatch system}
+\begin{itemize}
+\item L'application G3NFC doit se lancer automatiquement lorsqu'un Géocube est scanné.
+\item Utiliser le foreground dispatch system d'android
+\end{itemize}
+\begin{figure}
+\centering
+\includegraphics[scale=0.6]{images/foreground.png}
+
+\end{figure}
+\end{frame}
+
+\section{Mise en place d'une infrastructure virtuelle de production des logiciels}
+\begin{frame}
+\frametitle{Production des logiciels}
+\begin{figure}
+\centering
+\includegraphics[scale=0.6]{images/fig3.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Production des logiciels}
+\begin{figure}
+\centering
+\includegraphics[scale=0.3]{images/vps1.png}
+\end{figure}
+\end{frame}
+
+\section{Conception, Développement et déploiement d'un système de mise à jour pour le coordinateur des Géocubes}
+\subsubsection{Analyse du besoin}
+%------------------------------------------------
+\begin{frame}
+\frametitle{Contexte générale}
+\begin{figure}
+\centering
+\includegraphics[scale=0.7]{images/context_general.png}
+\end{figure}
+\end{frame}
+%------------------------------------------------
+\subsubsection{Conception statique}
+\begin{frame}
+\frametitle{Cas d'utilisation}
+\begin{figure}
+\centering
+\includegraphics[scale=0.45]{images/use_case_sharokey.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Modèle Physique des Données}
+\begin{figure}
+\centering
+\includegraphics[scale=0.6]{images/MPD_sharokey.png}
+\end{figure}
+\end{frame}
+\subsubsection{Conception dynamique et développement}
+\begin{frame}
+\frametitle{Composants de Sharokey}
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{images/composants.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Ajout d'un nouveau client}
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{images/1.png}
+\end{figure}
+\end{frame}
+
+\section{Limites du travail et conclusion}
+%------------------------------------------------
+\begin{frame}
+\frametitle{Limites du travail et conclusion}
+\begin{itemize}
+\item Toutes les commandes de la CLI du Géocube n'ont pas été implémentées
+\item Sharokey est déployé en production
+\item Le système de versioning est déployé en production
+\item Vers une nouvelle version de Sharokey qui encapsule un module d'intégration continue propre au système Géocube.
+
+\end{itemize}
+\end{frame}
+
+
+
+
+%------------------------------------------------
+
+\begin{frame}
+\Huge{\centerline{Merci!}}
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+\frametitle{Ajout d'un nouveau produit}
+\begin{figure}
+\centering
+\includegraphics[scale=0.6]{images/2.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Ajout d'une nouvelle version}
+\begin{figure}
+\centering
+\includegraphics[scale=0.6]{images/3.png}
+\end{figure}
+\end{frame}
+\begin{frame}
+\frametitle{Composants de Sharokey}
+\begin{itemize}
+\item Model : module NodeJS qui encapsule toute la logique liée aux opérations que les autres
+composants peuvent effectuer sur la base de donnée. Ainsi, si un module veut effectuer
+une opération sur la base de données, il devra passer par ce module.
+\item Kernel : C’est le noyau NodeJS de Sharokey (l’API centrale) qui contient toutes les
+fonctions communes aux autres modules.
+\item Watcher : C’est le composant le plus dynamique du système il écoute les triggers de la base
+de données effectue les modifications nécessaires sur le systèmes de fichier et vice-versa.
+Il encapsule aussi la logique liée à la sécurité et la génération automatique et signature
+des clés publiques et privés des nouveaux clients.
+\item server : C’est le serveur NodeJS qui reçoit les requêtes des clients en HTTPS, vérifie la
+signature sur leurs clés publiques, vérifie leur droit d’effectuer des mises à jour, prépare
+et envoie la mise à jour sous format de scripts auto-extractible.
+
+\end{itemize}
 \end{frame}
 %------------------------------------------------
 % dire que n inclut pas le 4eme niveau est
@@ -368,18 +488,7 @@ Pour envoyer un bloc du Géocube au smartphone:
 
 Lors du HandShake la tâche NFC envoie dans le premier I-Block échangé, l'URI de l'application Android qu'elle veut lancer
 \end{frame}
-
 %------------------------------------------------
-% picc check
-\begin{frame}
-\frametitle{Transfert des blocs}
-\begin{figure}
-\centering
-\includegraphics[scale=0.25]{images/chaining.png}
-\end{figure}
-Les mots envoyés par la tâche NFC: 1111 1XXX | 0101 0101 0101 0101 |
-\end{frame}
-
 %------------------------------------------------
 % picc check
 \begin{frame}
@@ -391,115 +500,37 @@ Les mots envoyés par la tâche NFC: 1111 1XXX | 0101 0101 0101 0101 |
 Fin de la transmission...
 \end{frame}
 
-%------------------------------------------------
-\subsection{Conception et développement de l'application Android}
-%------------------------------------------------
+% communication global
 \begin{frame}
-\frametitle{Foreground dispatch system}
+\frametitle{Communication micro-contrôleur/Puce NFC}
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{images/block-diagram.png}
+\end{figure}
+Exemple: Écrire un mot dans la FIFO
 \begin{itemize}
-\item L'application G3NFC doit se lancer automatiquement lorsqu'un Géocube est scanné.
-\item Utiliser le foreground dispatch system d'android
-\end{itemize}
-\begin{figure}
-\centering
-\includegraphics[scale=0.6]{images/foreground.png}
-
-\end{figure}
-\end{frame}
-
-\section{Conception, Développement et déploiement d'un système de mise à jour pour le coordinateur des Géocubes}
-\subsection{Analyse du besoin}
-%------------------------------------------------
-\begin{frame}
-\frametitle{Contexte générale}
-\begin{figure}
-\centering
-\includegraphics[scale=0.7]{images/context_general.png}
-\end{figure}
-\end{frame}
-%------------------------------------------------
-\subsection{Conception statique}
-\begin{frame}
-\frametitle{Cas d'utilisation}
-\begin{figure}
-\centering
-\includegraphics[scale=0.45]{images/use_case_sharokey.png}
-\end{figure}
-\end{frame}
-
-\begin{frame}
-\frametitle{Modèle Physique des Données}
-\begin{figure}
-\centering
-\includegraphics[scale=0.6]{images/MPD_sharokey.png}
-\end{figure}
-\end{frame}
-\subsection{Conception dynamique et développement}
-\begin{frame}
-\frametitle{Composants de Sharokey}
-\begin{figure}
-\centering
-\includegraphics[scale=0.5]{images/composants.png}
-\end{figure}
-\end{frame}
-
-\begin{frame}
-\frametitle{Composants de Sharokey}
-\begin{itemize}
-\item Model : module NodeJS qui encapsule toute la logique liée aux opérations que les autres
-composants peuvent effectuer sur la base de donnée. Ainsi, si un module veut effectuer
-une opération sur la base de données, il devra passer par ce module.
-\item Kernel : C’est le noyau NodeJS de Sharokey (l’API centrale) qui contient toutes les
-fonctions communes aux autres modules.
-\item Watcher : C’est le composant le plus dynamique du système il écoute les triggers de la base
-de données effectue les modifications nécessaires sur le systèmes de fichier et vice-versa.
-Il encapsule aussi la logique liée à la sécurité et la génération automatique et signature
-des clés publiques et privés des nouveaux clients.
-\item server : C’est le serveur NodeJS qui reçoit les requêtes des clients en HTTPS, vérifie la
-signature sur leurs clés publiques, vérifie leur droit d’effectuer des mises à jour, prépare
-et envoie la mise à jour sous format de scripts auto-extractible.
+\item Le micro-contrôleur active le CS, la synchronisation de l'horloge du micro-contrôleur avec celle de la puce NFC est effectuée.
+\item Le micro-contrôleur envoie 3 octets à travers le MOSI: Le premier correspond au mode de communication (1000 0000 pour écrire dans la FIFO), Le deuxième c'est l'adresse du mot qu'on veut écrire(0000 0000 pour écrire dans le premier mot) et l'octet qu'on veut écrire (1111 1111 par exemple). 1000 0000 0000 0000 1111 1111.
+\item De même pour la lecture...
 
 \end{itemize}
+
 \end{frame}
+% Schéma electrique d'une antenne
 
 \begin{frame}
-\frametitle{Ajout d'un nouveau client}
+
+Le circuit puce NFC+Antenne peut être assimiler au circuit suivant.
 \begin{figure}
 \centering
-\includegraphics[scale=0.4]{images/1.png}
+\includegraphics[scale=0.4]{images/withPARA.png}
 \end{figure}
-\end{frame}
 
-\section{Mise en place d'une infrastructure virtuelle de production des logiciels}
-\begin{frame}
-\frametitle{Production des logiciels}
+En calculant les R, C équivalents:
 \begin{figure}
 \centering
-\includegraphics[scale=0.6]{images/fig3.png}
+\includegraphics[scale=0.4]{images/circuiteq.png}
 \end{figure}
 \end{frame}
-
-\begin{frame}
-\frametitle{Production des logiciels}
-\begin{figure}
-\centering
-\includegraphics[scale=0.3]{images/vps1.png}
-\end{figure}
-\end{frame}
-
-\section{Limites du travail}
-%------------------------------------------------
-
-
-
-
-
-%------------------------------------------------
-
-\begin{frame}
-\Huge{\centerline{Merci!}}
-\end{frame}
-
-%----------------------------------------------------------------------------------------
 
 \end{document} 
